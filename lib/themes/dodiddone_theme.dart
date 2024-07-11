@@ -18,6 +18,18 @@ class DoDidDoneTheme {
         fontWeight: FontWeight.bold,
       ),
     ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: Color.fromRGBO(115, 90, 172, 1),
+      selectedItemColor: const Color(0xFF9F7BF6),
+      unselectedItemColor: Colors.grey,
+      selectedLabelStyle: const TextStyle(
+        fontWeight: FontWeight.bold,
+      ),
+      unselectedLabelStyle: const TextStyle(
+        fontWeight: FontWeight.normal,
+        color: const Color(0xFF9F7BF6),
+      ),
+    ),
     buttonTheme: ButtonThemeData(
       buttonColor: const Color(0xFF4CEB8B),
       textTheme: ButtonTextTheme.primary,

@@ -124,21 +124,25 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
         child: _screens[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.today),
+            icon: Icon(Icons.today,
+                color: DoDidDoneTheme.lightTheme.primaryColor),
             label: 'Сегодня',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
+            icon:
+                Icon(Icons.list, color: DoDidDoneTheme.lightTheme.primaryColor),
             label: 'Все',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle),
+            icon: Icon(Icons.check_circle,
+                color: DoDidDoneTheme.lightTheme.primaryColor),
             label: 'Выполненные',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person,
+                color: DoDidDoneTheme.lightTheme.primaryColor),
             label: 'Профиль',
           ),
         ],
