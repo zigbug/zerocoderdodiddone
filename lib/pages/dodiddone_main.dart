@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Импорт Firestore
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart'; // Импорт для форматирования даты
 
 import '../themes/dodiddone_theme.dart';
+import '../widgets/all_tasks_widget.dart';
 import '../widgets/profile_widget.dart';
+import '../models/task_model.dart'; // Импорт модели Task
 
 class DoDidDoneMain extends StatefulWidget {
   const DoDidDoneMain({super.key});
@@ -18,7 +23,7 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
     // Страница "Задачи на сегодня"
     const Center(child: Text('Задачи на сегодня')),
     // Страница "Все задачи"
-    const Center(child: Text('Все задачи')),
+    const AllTasksWidget(),
     // Страница "Выполненные"
     const Center(child: Text('Выполненные')),
     // Страница "Профиль"
@@ -31,6 +36,12 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
     });
   }
 
+  final _formKey = GlobalKey<FormState>(); // Ключ для формы
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _dueDateController = TextEditingController();
+  DateTime? _selectedDate; // Переменная для выбранной даты
+
   void _showAddTaskDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -38,11 +49,13 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
         return AlertDialog(
           title: const Text('Добавить задачу'),
           content: Form(
+            key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Поле "Название"
                 TextFormField(
+                  controller: _titleController,
                   decoration: const InputDecoration(labelText: 'Название'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -55,6 +68,7 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
 
                 // Поле "Суть задачи"
                 TextFormField(
+                  controller: _descriptionController,
                   decoration: const InputDecoration(labelText: 'Суть задачи'),
                   maxLines: 3,
                   validator: (value) {
@@ -68,8 +82,20 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
 
                 // Поле "Дедлайн"
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Дедлайн'),
+                  controller: _dueDateController,
+                  decoration: InputDecoration(
+                    labelText: 'Дедлайн',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.calendar_today),
+                      onPressed: () {
+                        _selectDate(context);
+                      },
+                    ),
+                  ),
                   keyboardType: TextInputType.datetime,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
+                  ], // Разрешаем только цифры и "/"
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Введите дедлайн';
@@ -88,9 +114,38 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
               child: const Text('Отмена'),
             ),
             TextButton(
-              onPressed: () {
-                // Обработка добавления задачи
-                Navigator.of(context).pop();
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  // Получение данных из полей формы
+                  final title = _titleController.text;
+                  final description = _descriptionController.text;
+                  final dueDate = _selectedDate ??
+                      DateTime.now(); // Используем выбранную дату
+
+                  // Создание объекта Task
+                  final newTask = Task(
+                    id: '', // ID будет сгенерирован Firebase
+                    title: title,
+                    description: description,
+                    dueDate: dueDate,
+                    createdAt: DateTime.now(),
+                    isCompleted: false,
+                  );
+
+                  // Отправка задачи в Firebase
+                  final docRef =
+                      FirebaseFirestore.instance.collection('tasks').doc();
+                  await docRef.set(newTask.toMap());
+
+                  // Очистка полей формы
+                  _titleController.clear();
+                  _descriptionController.clear();
+                  _dueDateController.clear();
+                  _selectedDate = null; // Сброс выбранной даты
+
+                  // Закрытие диалогового окна
+                  Navigator.of(context).pop();
+                }
               },
               child: const Text('Добавить'),
             ),
@@ -98,6 +153,22 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
         );
       },
     );
+  }
+
+  // Метод для выбора даты
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dueDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
   }
 
   @override
