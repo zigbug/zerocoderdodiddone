@@ -52,8 +52,18 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
                   });
                 });
               },
-              onDismissedLeft: task.toggleForToday,
-              onDismissedRight: task.toggleCompleted,
+              onDismissedLeft: () {
+                task.toggleForToday();
+                _tasksCollection.doc(task.id).update({
+                  'forToday': task.isForToday,
+                });
+              },
+              onDismissedRight: () {
+                task.toggleCompleted();
+                _tasksCollection.doc(task.id).update({
+                  'isCompleted': task.isCompleted,
+                });
+              },
             );
           },
         );
