@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../themes/dodiddone_theme.dart';
-import 'profile_page.dart';
+import '../widgets/profile_widget.dart';
 
 class DoDidDoneMain extends StatefulWidget {
   const DoDidDoneMain({super.key});
@@ -22,7 +22,7 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
     // Страница "Выполненные"
     const Center(child: Text('Выполненные')),
     // Страница "Профиль"
-    const ProfilePage(),
+    const ProfileWidget(),
   ];
 
   void _onItemTapped(int index) {

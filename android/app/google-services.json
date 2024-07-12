@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "459342442820",
+    "project_id": "dodiddone-64f1a",
+    "storage_bucket": "dodiddone-64f1a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:459342442820:android:bcfb0ac3d9c93c71eda711",
+        "android_client_info": {
+          "package_name": "ru.zerocoder.dodiddone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6nrMDS-24i0RJAi1xytwxMZnQGpR22Ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
