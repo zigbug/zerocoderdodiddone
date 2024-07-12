@@ -64,9 +64,6 @@ class TaskItem extends StatelessWidget {
               // Крайний срок
               Text('Крайний срок: ${task.dueDate}'),
               const SizedBox(height: 8),
-
-              // Статус
-              Checkbox(value: task.isCompleted, onChanged: onChanged),
             ],
           ),
         ),

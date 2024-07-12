@@ -45,11 +45,9 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
             return TaskItem(
               task: task,
               onChanged: (value) {
-                setState(() {
-                  // Обновление статуса задачи в Firebase
-                  _tasksCollection.doc(task.id).update({
-                    'isCompleted': value,
-                  });
+                // Обновление статуса задачи в Firebase
+                _tasksCollection.doc(task.id).update({
+                  'isCompleted': value,
                 });
               },
               onDismissedLeft: () {
