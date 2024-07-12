@@ -6,8 +6,10 @@ import 'package:intl/intl.dart'; // Импорт для форматирован
 
 import '../themes/dodiddone_theme.dart';
 import '../widgets/all_tasks_widget.dart';
+import '../widgets/completed_task_widget.dart';
 import '../widgets/profile_widget.dart';
-import '../models/task_model.dart'; // Импорт модели Task
+import '../models/task_model.dart';
+import '../widgets/todayTasks_widget.dart'; // Импорт модели Task
 
 class DoDidDoneMain extends StatefulWidget {
   const DoDidDoneMain({super.key});
@@ -21,11 +23,11 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
 
   final List<Widget> _screens = [
     // Страница "Задачи на сегодня"
-    const Center(child: Text('Задачи на сегодня')),
+    const TodayTasksWidget(),
     // Страница "Все задачи"
     const AllTasksWidget(),
     // Страница "Выполненные"
-    const Center(child: Text('Выполненные')),
+    const CompletedTasksWidget(),
     // Страница "Профиль"
     const ProfileWidget(),
   ];
