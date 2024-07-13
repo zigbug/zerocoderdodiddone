@@ -4,7 +4,7 @@ import 'package:zerocoderdodiddone/models/task_model.dart';
 import 'package:zerocoderdodiddone/widgets/task_item.dart';
 
 class TodayTasksWidget extends StatefulWidget {
-  const TodayTasksWidget({Key? key}) : super(key: key);
+  const TodayTasksWidget({super.key});
 
   @override
   State<TodayTasksWidget> createState() => _TodayTasksWidgetState();

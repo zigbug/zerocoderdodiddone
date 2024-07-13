@@ -20,8 +20,9 @@ class Task extends Equatable {
   final bool isCompleted;
   final DateTime createdAt; // Поле для времени создания
   final bool isForToday; // Булевое поле "на сегодня"
+  final bool isImportant;
 
-  const Task({
+  const Task({this.isImportant=false, 
      this.id,
     required this.title,
     required this.description,
@@ -30,6 +31,8 @@ class Task extends Equatable {
     required this.createdAt, // Инициализация времени создания
     this.isForToday = false, // Инициализация поля "на сегодня"
   });
+
+  
 
   // Метод для обновления статуса задачи
   Task toggleCompleted() {
@@ -103,6 +106,29 @@ class Task extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       isForToday: isForToday ?? this.isForToday,
     );
+  }
+
+  Priority get priority {
+      final today = DateTime.now();
+    final difference = dueDate.difference(today).inDays;
+
+    // Базовый приоритет
+    Priority basePriority = difference > 2
+        ? Priority.low
+        : difference > 0
+            ? Priority.medium
+            : Priority.high;
+
+    // Учитываем isImportant
+    if (isImportant) {
+      if (basePriority == Priority.low) {
+        return Priority.medium;
+      } else if (basePriority == Priority.medium) {
+        return Priority.high;
+      }
+    }
+
+    return basePriority;
   }
 
   // Реализация Equatable

@@ -18,20 +18,21 @@ class DoDidDoneTheme {
         fontWeight: FontWeight.bold,
       ),
     ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Color.fromRGBO(115, 90, 172, 1),
-      selectedItemColor: const Color(0xFF9F7BF6),
+      selectedItemColor: Color(0xFF9F7BF6),
       unselectedItemColor: Colors.grey,
-      selectedLabelStyle: const TextStyle(
+      selectedLabelStyle: TextStyle(
         fontWeight: FontWeight.bold,
+        color: Color(0xFF9F7BF6),
       ),
-      unselectedLabelStyle: const TextStyle(
+      unselectedLabelStyle: TextStyle(
         fontWeight: FontWeight.normal,
-        color: const Color(0xFF9F7BF6),
+        color: Color(0xFF9F7BF6),
       ),
     ),
-    buttonTheme: ButtonThemeData(
-      buttonColor: const Color(0xFF4CEB8B),
+    buttonTheme: const ButtonThemeData(
+      buttonColor: Color(0xFF4CEB8B),
       textTheme: ButtonTextTheme.primary,
     ),
     textButtonTheme: TextButtonThemeData(
