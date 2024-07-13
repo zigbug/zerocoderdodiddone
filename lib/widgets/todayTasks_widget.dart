@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zerocoderdodiddone/models/task_model.dart';
+import 'package:zerocoderdodiddone/widgets/task_item.dart';
 
 class TodayTasksWidget extends StatefulWidget {
   const TodayTasksWidget({Key? key}) : super(key: key);
@@ -11,7 +12,7 @@ class TodayTasksWidget extends StatefulWidget {
 
 class _TodayTasksWidgetState extends State<TodayTasksWidget> {
   final CollectionReference _tasksCollection =
-      FirebaseFirestore.instance.collection('tasks');
+      FirebaseFirestore.instance.collection('tasks')..where( 'isForToday', isEqualTo: true);
 
   @override
   Widget build(BuildContext context) {
@@ -42,21 +43,51 @@ class _TodayTasksWidgetState extends State<TodayTasksWidget> {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
-            return TaskWidget(
-              task: task,
-              onDismissedLeft: (task) {
-                // Обновление поля "на сегодня" в Firebase
-                _tasksCollection.doc(task.id).update({
+            return TaskItem(task: task,
+            screen: Screen.forToday,
+             onChanged: 
+            (value) async{
+              // Обновление статуса задачи в Firebase
+              await _tasksCollection.doc(task.id).update({
+                'isCompleted': value,
+              });
+            }, 
+            onDismissedLeft: 
+            () async{
+                await  _tasksCollection.doc(task.id).update({
+                  'isForToday': !task.isForToday,
+                  
+                  'isCompleted': !task.isCompleted,
+                });
+                
+              },
+              onDismissedRight: () async {
+                
+              // Обновление поля "на сегодня" в Firebase
+               await _tasksCollection.doc(task.id).update({
                   'isForToday': !task.isForToday,
                 });
               },
-              onDismissedRight: (task) {
-                // Обновление статуса задачи в Firebase
-                _tasksCollection.doc(task.id).update({
-                  'isCompleted': !task.isCompleted,
-                });
-              },
+            
             );
+            //  TaskWidget(
+            //   task: task,
+            //   onDismissedLeft: (task) async{
+            //     await  _tasksCollection.doc(task.id).update({
+            //       'isForToday': !task.isForToday,
+                  
+            //       'isCompleted': !task.isCompleted,
+            //     });
+                
+            //   },
+            //   onDismissedRight: (task) async {
+                
+            //   // Обновление поля "на сегодня" в Firebase
+            //    await _tasksCollection.doc(task.id).update({
+            //       'isForToday': !task.isForToday,
+            //     });
+            //   },
+            // );
           },
         );
       },

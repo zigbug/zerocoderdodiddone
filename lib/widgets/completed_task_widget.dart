@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zerocoderdodiddone/models/task_model.dart';
+import 'package:zerocoderdodiddone/widgets/task_item.dart';
 
 class CompletedTasksWidget extends StatefulWidget {
   const CompletedTasksWidget({Key? key}) : super(key: key);
@@ -42,21 +43,37 @@ class _CompletedTasksWidgetState extends State<CompletedTasksWidget> {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
-            return TaskWidget(
-              task: task,
-              onDismissedLeft: (task) {
-                // Обновление поля "на сегодня" в Firebase
-                _tasksCollection.doc(task.id).update({
-                  'isForToday': !task.isForToday,
-                });
-              },
-              onDismissedRight: (task) {
-                // Обновление статуса задачи в Firebase
-                _tasksCollection.doc(task.id).update({
+            return 
+            TaskItem(task: task, 
+            screen: Screen.completed,
+            
+            onChanged: (value) {
+              // Обновление статуса задачи в Firebase
+              _tasksCollection.doc(task.id).update({
+                'isCompleted': value,
+              });
+            }, 
+                    onDismissedLeft: ()async {
+                 await _tasksCollection.doc(task.id).update({
                   'isCompleted': !task.isCompleted,
                 });
               },
+              onDismissedRight: () async{
+           
+
+                 await  _tasksCollection.doc(task.id).update({
+                  'isForToday': !task.isForToday,
+                  'isCompleted': !task.isCompleted,
+                });
+              },
+            
+            
             );
+
+            // TaskWidget(
+            //   task: task,
+     
+            // );
           },
         );
       },

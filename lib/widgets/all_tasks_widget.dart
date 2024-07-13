@@ -13,7 +13,6 @@ class AllTasksWidget extends StatefulWidget {
 class _AllTasksWidgetState extends State<AllTasksWidget> {
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -27,14 +26,20 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final tasks = snapshot.data!.docs.map((doc) {
-          return Task.fromMap(doc.data() as Map<String, dynamic>);
-        }).toList();
+        final tasks = (snapshot.data!.docs.map((doc) {
+         var task= Task.fromMap(doc.data() as Map<String, dynamic>); 
+       task =task.copyWith(id: doc.id); 
+          return task;
+        }).toList()).where((task) => task.isCompleted == false&&task.isForToday==false).toList();
+
 
         if (tasks.isEmpty) {
-          return const Center(
-            child: Text(
-                'Всё сделано, время отдыхать... или добавить новую задачу?!'),
+          return const Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Center(
+              child: Text(
+                  'Всё сделано, время отдыхать... \nили добавить новую задачу?!', textAlign: TextAlign.center,),
+            ),
           );
         }
 
@@ -43,6 +48,7 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
           itemBuilder: (context, index) {
             final task = tasks[index];
             return TaskItem(
+              screen: Screen.allTasks,
               task: task,
               onChanged: (value) {
                 // Обновление статуса задачи в Firebase
@@ -50,17 +56,14 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
                   'isCompleted': value,
                 });
               },
-              onDismissedLeft: () {
-                task.toggleForToday();
-                _tasksCollection.doc(task.id).update({
-                  'forToday': task.isForToday,
-                });
+              onDismissedLeft: ()async {
+                await _tasksCollection.doc(task.id).update(task.copyWith(isForToday: true).toJson()
+                );
               },
-              onDismissedRight: () {
-                task.toggleCompleted();
-                _tasksCollection.doc(task.id).update({
-                  'isCompleted': task.isCompleted,
-                });
+              onDismissedRight: () async {
+              await _tasksCollection.doc(task.id).update(
+                 task.copyWith(isCompleted: true).toJson()
+                );
               },
             );
           },

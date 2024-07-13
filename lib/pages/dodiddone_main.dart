@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Импорт Firestore
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart'; // Импорт для форматирования даты
@@ -22,12 +21,15 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
   int _selectedIndex = 0; // Индекс выбранного раздела
 
   final List<Widget> _screens = [
-    // Страница "Задачи на сегодня"
-    const TodayTasksWidget(),
     // Страница "Все задачи"
     const AllTasksWidget(),
+
+    // Страница "Задачи на сегодня"
+    const TodayTasksWidget(),
+  
     // Страница "Выполненные"
     const CompletedTasksWidget(),
+
     // Страница "Профиль"
     const ProfileWidget(),
   ];
@@ -49,63 +51,69 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          scrollable: true,
           title: const Text('Добавить задачу'),
           content: Form(
             key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Поле "Название"
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Название'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Введите название задачи';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Поле "Суть задачи"
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Суть задачи'),
-                  maxLines: 3,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Введите суть задачи';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Поле "Дедлайн"
-                TextFormField(
-                  controller: _dueDateController,
-                  decoration: InputDecoration(
-                    labelText: 'Дедлайн',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.calendar_today),
-                      onPressed: () {
-                        _selectDate(context);
+            child: Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Поле "Название"
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(labelText: 'Название'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Введите название задачи';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+              
+                  // Поле "Суть задачи"
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextFormField(
+                      controller: _descriptionController,
+                      decoration: const InputDecoration(labelText: 'Суть задачи'),
+                      maxLines: 3,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Введите суть задачи';
+                        }
+                        return null;
                       },
                     ),
                   ),
-                  keyboardType: TextInputType.datetime,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
-                  ], // Разрешаем только цифры и "/"
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Введите дедлайн';
-                    }
-                    return null;
-                  },
-                ),
-              ],
+                  const SizedBox(height: 16),
+              
+                  // Поле "Дедлайн"
+                  TextFormField(
+                    controller: _dueDateController,
+                    decoration: InputDecoration(
+                      labelText: 'Дедлайн',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () {
+                          _selectDate(context);
+                        },
+                      ),
+                    ),
+                    keyboardType: TextInputType.datetime,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
+                    ], // Разрешаем только цифры и "/"
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Введите дедлайн';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [
@@ -126,11 +134,12 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
 
                   // Создание объекта Task
                   final newTask = Task(
-                    id: '', // ID будет сгенерирован Firebase
+                    // ID будет сгенерирован Firebase
                     title: title,
                     description: description,
                     dueDate: dueDate,
                     createdAt: DateTime.now(),
+                    isForToday: false,
                     isCompleted: false,
                   );
 
@@ -176,6 +185,7 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+         resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -199,15 +209,16 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.today,
-                color: DoDidDoneTheme.lightTheme.primaryColor),
-            label: 'Сегодня',
-          ),
-          BottomNavigationBarItem(
             icon:
                 Icon(Icons.list, color: DoDidDoneTheme.lightTheme.primaryColor),
             label: 'Все',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.today,
+                color: DoDidDoneTheme.lightTheme.primaryColor),
+            label: 'Сегодня',
+          ),
+         
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle,
                 color: DoDidDoneTheme.lightTheme.primaryColor),
