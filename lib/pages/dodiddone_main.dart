@@ -1,14 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Импорт Firestore
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart'; // Импорт для форматирования даты
+import 'package:flutter/material.dart'; // Импорт для форматирования даты
 import 'package:zerocoderdodiddone/utils/task_dialog.dart';
 
 import '../themes/dodiddone_theme.dart';
 import '../widgets/all_tasks_widget.dart';
 import '../widgets/completed_task_widget.dart';
 import '../widgets/profile_widget.dart';
-import '../models/task_model.dart';
 import '../widgets/todayTasks_widget.dart'; // Импорт модели Task
 
 class DoDidDoneMain extends StatefulWidget {
@@ -27,7 +23,7 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
 
     // Страница "Задачи на сегодня"
     const TodayTasksWidget(),
-  
+
     // Страница "Выполненные"
     const CompletedTasksWidget(),
 
@@ -41,17 +37,12 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
     });
   }
 
-  final _formKey = GlobalKey<FormState>(); // Ключ для формы
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _dueDateController = TextEditingController();
-  DateTime? _selectedDate; // Переменная для выбранной даты
+// Переменная для выбранной даты
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-         resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -75,22 +66,31 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon:
-                Icon(Icons.list,),
+            icon: Icon(
+              Icons.list,
+              size: 30,
+            ),
             label: 'Все',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.today,
-                ),
+            icon: Icon(
+              Icons.today,
+              size: 30,
+            ),
             label: 'Сегодня',
           ),
-         
           BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle,),
+            icon: Icon(
+              Icons.check_circle,
+              size: 30,
+            ),
             label: 'Выполненные',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person,),
+            icon: Icon(
+              Icons.person,
+              size: 30,
+            ),
             label: 'Профиль',
           ),
         ],
@@ -98,8 +98,9 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
         onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: DoDidDoneTheme.lightTheme.colorScheme.secondary,
         onPressed: () {
-          showAddTaskDialog(context);
+          showAddTaskDialog(context, null);
         },
         child: const Icon(Icons.add),
       ),

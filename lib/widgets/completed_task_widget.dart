@@ -11,8 +11,6 @@ class CompletedTasksWidget extends StatefulWidget {
 }
 
 class _CompletedTasksWidgetState extends State<CompletedTasksWidget> {
-
-
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
 
@@ -45,37 +43,35 @@ class _CompletedTasksWidgetState extends State<CompletedTasksWidget> {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
-            return 
-            TaskItem(
-              task: task, 
-            screen: Screen.completed,
-            
-            onChanged: (value) {
-              // Обновление статуса задачи в Firebase
-              _tasksCollection.doc(task.id).update({
-                'isCompleted': value,
-              });
-            }, 
-                    onDismissedLeft: ()async {
-                 await _tasksCollection.doc(task.id).update({
+            return TaskItem(
+              onDelete: () async {
+                await _tasksCollection.doc(task.id).delete();
+              },
+              task: task,
+              screen: Screen.completed,
+              onChanged: (value) {
+                // Обновление статуса задачи в Firebase
+                _tasksCollection.doc(task.id).update({
+                  'isCompleted': value,
+                });
+              },
+              onDismissedLeft: () async {
+                await _tasksCollection.doc(task.id).update({
                   'isCompleted': !task.isCompleted,
                 });
               },
-              onDismissedRight: () async{
-           
-
-                 await  _tasksCollection.doc(task.id).update({
+              onDismissedRight: () async {
+                await _tasksCollection.doc(task.id).update({
                   'isForToday': !task.isForToday,
                   'isCompleted': !task.isCompleted,
                 });
-              }, onEdit: () {  },
-            
-            
+              },
+              onEdit: () {},
             );
 
             // TaskWidget(
             //   task: task,
-     
+
             // );
           },
         );

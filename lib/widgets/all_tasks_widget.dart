@@ -16,8 +16,10 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection.where('isCompleted', isEqualTo: false).where('isForToday', isEqualTo: false).
-      snapshots(),
+      stream: _tasksCollection
+          .where('isCompleted', isEqualTo: false)
+          .where('isForToday', isEqualTo: false)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text('Ошибка загрузки задач');
@@ -28,18 +30,19 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
         }
 
         final tasks = snapshot.data!.docs.map((doc) {
-         var task= Task.fromMap(doc.data() as Map<String, dynamic>); 
-       task =task.copyWith(id: doc.id); 
+          var task = Task.fromMap(doc.data() as Map<String, dynamic>);
+          task = task.copyWith(id: doc.id);
           return task;
         }).toList(); //.where((task) => task.isCompleted == false&&task.isForToday==false).toList()
-
 
         if (tasks.isEmpty) {
           return const Padding(
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                  'Всё сделано, время отдыхать... \nили добавить новую задачу?!', textAlign: TextAlign.center,),
+                'Всё сделано, время отдыхать... \nили добавить новую задачу?!',
+                textAlign: TextAlign.center,
+              ),
             ),
           );
         }
@@ -51,21 +54,26 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
             return TaskItem(
               screen: Screen.allTasks,
               task: task,
+              onDelete: () async {
+                await _tasksCollection.doc(task.id).delete();
+              },
               onChanged: (value) {
                 // Обновление статуса задачи в Firebase
                 _tasksCollection.doc(task.id).update({
                   'isCompleted': value,
                 });
               },
-              onDismissedLeft: ()async {
-                await _tasksCollection.doc(task.id).update(task.copyWith(isForToday: true).toJson()
-                );
+              onDismissedLeft: () async {
+                await _tasksCollection
+                    .doc(task.id)
+                    .update(task.copyWith(isForToday: true).toJson());
               },
               onDismissedRight: () async {
-              await _tasksCollection.doc(task.id).update(
-                 task.copyWith(isCompleted: true).toJson()
-                );
-              }, onEdit: () {  },
+                await _tasksCollection
+                    .doc(task.id)
+                    .update(task.copyWith(isCompleted: true).toJson());
+              },
+              onEdit: () {},
             );
           },
         );
