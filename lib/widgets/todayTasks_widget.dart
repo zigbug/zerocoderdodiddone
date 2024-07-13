@@ -12,7 +12,7 @@ class TodayTasksWidget extends StatefulWidget {
 
 class _TodayTasksWidgetState extends State<TodayTasksWidget> {
   final CollectionReference _tasksCollection =
-      FirebaseFirestore.instance.collection('tasks')..where( 'isForToday', isEqualTo: true);
+      FirebaseFirestore.instance.collection('tasks');
 
   @override
   Widget build(BuildContext context) {

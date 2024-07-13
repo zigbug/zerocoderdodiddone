@@ -16,7 +16,8 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection.snapshots(),
+      stream: _tasksCollection.where('isCompleted', isEqualTo: false).where('isForToday', isEqualTo: false).
+      snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text('Ошибка загрузки задач');
@@ -30,7 +31,7 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
          var task= Task.fromMap(doc.data() as Map<String, dynamic>); 
        task =task.copyWith(id: doc.id); 
           return task;
-        }).toList()).where((task) => task.isCompleted == false&&task.isForToday==false).toList();
+        }).toList()); //.where((task) => task.isCompleted == false&&task.isForToday==false).toList()
 
 
         if (tasks.isEmpty) {
