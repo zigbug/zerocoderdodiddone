@@ -67,7 +67,7 @@ class _TodayTasksWidgetState extends State<TodayTasksWidget> {
                await _tasksCollection.doc(task.id).update({
                   'isForToday': !task.isForToday,
                 });
-              },
+              }, onEdit: () {  },
             
             );
             //  TaskWidget(

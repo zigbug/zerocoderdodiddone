@@ -4,13 +4,15 @@ import 'package:zerocoderdodiddone/models/task_model.dart';
 import 'package:zerocoderdodiddone/widgets/task_item.dart';
 
 class CompletedTasksWidget extends StatefulWidget {
-  const CompletedTasksWidget({Key? key}) : super(key: key);
+  const CompletedTasksWidget({super.key});
 
   @override
   State<CompletedTasksWidget> createState() => _CompletedTasksWidgetState();
 }
 
 class _CompletedTasksWidgetState extends State<CompletedTasksWidget> {
+
+
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
 
@@ -44,7 +46,8 @@ class _CompletedTasksWidgetState extends State<CompletedTasksWidget> {
           itemBuilder: (context, index) {
             final task = tasks[index];
             return 
-            TaskItem(task: task, 
+            TaskItem(
+              task: task, 
             screen: Screen.completed,
             
             onChanged: (value) {
@@ -65,7 +68,7 @@ class _CompletedTasksWidgetState extends State<CompletedTasksWidget> {
                   'isForToday': !task.isForToday,
                   'isCompleted': !task.isCompleted,
                 });
-              },
+              }, onEdit: () {  },
             
             
             );

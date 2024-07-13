@@ -65,7 +65,7 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
               await _tasksCollection.doc(task.id).update(
                  task.copyWith(isCompleted: true).toJson()
                 );
-              },
+              }, onEdit: () {  },
             );
           },
         );
