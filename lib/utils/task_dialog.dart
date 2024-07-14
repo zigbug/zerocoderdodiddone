@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:zerocoderdodiddone/models/task_model.dart';
 import 'package:zerocoderdodiddone/services/notifications_service.dart';
 
+import '../services/local_notifications.dart';
+
 void showAddTaskDialog(BuildContext context, Task? task) {
   final _formKey = GlobalKey<FormState>(); // Ключ для формы
   final _titleController = TextEditingController();
@@ -154,6 +156,11 @@ void showAddTaskDialog(BuildContext context, Task? task) {
 
                 await notificationService.init();
                 if (task?.isImportant ?? false) {
+                  LocalNotifications.showSimpleNotification(
+                      title: "Simple Notification",
+                      body: "This is a simple notification",
+                      payload: "This is simple data");
+
                   await notificationService.showNotification(
                       id: 2, title: title, body: description);
                   await notificationService.showNotification(

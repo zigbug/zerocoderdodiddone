@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart'; // Импорт для форматирования даты
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:zerocoderdodiddone/utils/task_dialog.dart';
 
+import '../services/local_notifications.dart';
 import '../themes/dodiddone_theme.dart';
 import '../widgets/all_tasks_widget.dart';
 import '../widgets/completed_task_widget.dart';
@@ -30,11 +32,33 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
     // Страница "Профиль"
     const ProfileWidget(),
   ];
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  listenToNotifications() {
+    print("Listening to notification");
+    LocalNotifications.onClickNotification.stream.listen((event) {
+      print(event);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const DoDidDoneMain()));
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    ininializeLocalNotifications();
+    listenToNotifications();
+    super.initState();
+  }
+
+  void ininializeLocalNotifications() async {
+    await LocalNotifications.init();
   }
 
 // Переменная для выбранной даты
