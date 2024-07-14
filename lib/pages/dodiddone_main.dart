@@ -47,7 +47,23 @@ class _DoDidDoneMainState extends State<DoDidDoneMain> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 2,
-        title: const Text('DoDidDone'),
+        title: Row(children: [
+          Image.asset(
+            'assets/0qode_symbol_1.png', // Путь к картинке
+            height: 25, // Высота картинки
+            width: 25, // Ширина картинки
+          ),
+          const SizedBox(width: 5),
+          // Белая надпись "zerocoder"
+          Text(
+            'zerocoder',
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.normal,
+              color: Colors.white,
+            ),
+          ),
+        ]),
       ),
       body: Container(
         decoration: BoxDecoration(

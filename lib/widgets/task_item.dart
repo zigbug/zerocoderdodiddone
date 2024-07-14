@@ -82,7 +82,7 @@ class TaskItem extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black, // Изменили цвет на черный
                         ),
                       ),
                     ),
@@ -125,8 +125,9 @@ class TaskItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           IconButton(
-                            onPressed:
-                                onEdit, // Вызываем функцию onEdit при нажатии
+                            onPressed: () {
+                              showAddTaskDialog(context, task);
+                            }, // Вызываем функцию диалог при нажатии
                             icon: const Icon(Icons.edit),
                           ),
                           IconButton(
@@ -171,163 +172,3 @@ class TaskItem extends StatelessWidget {
     }
   }
 }
-
-
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import 'package:zerocoderdodiddone/utils/task_dialog.dart';
-
-// import '../models/task_model.dart';
-
-// enum Screen { allTasks, forToday, completed }
-
-// class TaskItem extends StatelessWidget {
-//   final Task task;
-//   final Screen screen;
-//   final void Function(bool?) onChanged;
-//   final void Function() onDismissedLeft;
-//   final void Function() onDismissedRight;
-//   final void Function() onEdit; // Добавляем функцию onEdit
-//   final void Function() onDelete; // Добавляем функцию onDelete
-//   final List<Widget> icons = const [
-//     Icon(Icons.calendar_today, color: Colors.white),
-//     Icon(Icons.check_circle, color: Colors.white),
-//     Icon(Icons.list, color: Colors.white),
-//   ];
-
-//   const TaskItem({
-//     super.key,
-//     required this.screen,
-//     required this.task,
-//     required this.onChanged,
-//     required this.onDismissedLeft,
-//     required this.onDismissedRight,
-//     required this.onEdit, // Передаем функцию onEdit
-//     required this.onDelete, // Передаем функцию onDelete
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Dismissible(
-//       key: Key(task.createdAt.toString()),
-//       //смещение слева направо
-//       background: Container(
-//         color: Colors.blue,
-//         child: Align(
-//           alignment: Alignment.centerLeft,
-//           child: icons[screen.index],
-//         ),
-//       ),
-//       secondaryBackground: Container(
-//         color: Colors.green,
-//         child: Align(
-//           alignment: Alignment.centerRight,
-//           child: icons[(screen.index + 1) % icons.length],
-//         ),
-//       ),
-//       onDismissed: (direction) {
-//         if (direction == DismissDirection.startToEnd) {
-//           onDismissedLeft();
-//         } else if (direction == DismissDirection.endToStart) {
-//           onDismissedRight();
-//         }
-//       },
-//       child: Padding(
-//         padding: const EdgeInsets.all(8.0),
-//         child: Card(
-//           child: Row(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Expanded(
-//                 flex: 5,
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.center,
-//                   children: [
-//                     // Заголовок
-//                     Padding(
-//                       padding: const EdgeInsets.all(8.0),
-//                       child: Text(
-//                         task.title,
-//                         style: const TextStyle(
-//                           fontSize: 18,
-//                           fontWeight: FontWeight.bold,
-//                         ),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 8),
-
-//                     // Описание
-//                     Padding(
-//                       padding: const EdgeInsets.all(8.0),
-//                       child: Text(task.description),
-//                     ),
-//                     const SizedBox(height: 8),
-
-//                     // Крайний срок
-//                     Text(
-//                         'Крайний срок:  ${DateFormat('dd.MM.yy HH:mm').format(task.dueDate)}'),
-//                     const SizedBox(height: 8),
-//                   ],
-//                 ),
-//               ),
-//               Expanded(
-//                 flex: 1,
-//                 child: Container(
-//                   decoration: BoxDecoration(
-//                     gradient: getGradient(task.priority), // Применяем градиент
-//                     borderRadius:
-//                         BorderRadius.circular(8), // Добавляем скругление углов
-//                   ),
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(8.0),
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                       children: [
-//                         IconButton(
-//                           onPressed:
-//                               onEdit, // Вызываем функцию onEdit при нажатии
-//                           icon: const Icon(Icons.edit),
-//                         ),
-//                         IconButton(
-//                           onPressed:
-//                               onDelete, // Вызываем функцию onDelete при нажатии
-//                           icon: const Icon(Icons.delete),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   // Функция для получения градиента в зависимости от приоритета
-//   LinearGradient getGradient(Priority priority) {
-//     switch (priority) {
-//       case Priority.high:
-//         return const LinearGradient(
-//           begin: Alignment.topCenter,
-//           end: Alignment.bottomCenter,
-//           colors: [Colors.red, Colors.white],
-//         );
-//       case Priority.medium:
-//         return const LinearGradient(
-//           begin: Alignment.topCenter,
-//           end: Alignment.bottomCenter,
-//           colors: [Colors.yellow, Colors.white],
-//         );
-//       case Priority.low:
-//         return const LinearGradient(
-//           begin: Alignment.topCenter,
-//           end: Alignment.bottomCenter,
-//           colors: [Colors.green, Colors.white],
-//         );
-//     }
-//   }
-// }
-

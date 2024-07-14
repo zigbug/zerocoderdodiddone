@@ -29,11 +29,13 @@ class _AllTasksWidgetState extends State<AllTasksWidget> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final tasks = snapshot.data!.docs.map((doc) {
+        final tasks = (snapshot.data!.docs.map((doc) {
           var task = Task.fromMap(doc.data() as Map<String, dynamic>);
           task = task.copyWith(id: doc.id);
           return task;
-        }).toList(); //.where((task) => task.isCompleted == false&&task.isForToday==false).toList()
+        }).toList());
+        tasks.sort((a, b) => b.priority.index.compareTo(a.priority.index));
+        //.where((task) => task.isCompleted == false&&task.isForToday==false).toList()
 
         if (tasks.isEmpty) {
           return const Padding(

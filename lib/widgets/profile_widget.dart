@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:zerocoderdodiddone/pages/login_page.dart';
 
 import '../themes/dodiddone_theme.dart';
 
@@ -120,7 +121,8 @@ class _ProfilePageState extends State<ProfileWidget> {
               onPressed: () {
                 FirebaseAuth.instance.signOut();
                 // Переход на страницу входа
-                Navigator.pushReplacementNamed(context, '/login');
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor:

@@ -18,6 +18,16 @@ class DoDidDoneTheme {
         fontWeight: FontWeight.bold,
       ),
     ),
+    timePickerTheme: TimePickerThemeData(
+        confirmButtonStyle: ButtonStyle(
+            foregroundColor: WidgetStatePropertyAll(Color(0xFF9F7BF6))),
+        cancelButtonStyle: ButtonStyle(
+            foregroundColor: WidgetStatePropertyAll(Color(0xFF9F7BF6)))),
+    datePickerTheme: const DatePickerThemeData(
+        confirmButtonStyle: ButtonStyle(
+            foregroundColor: WidgetStatePropertyAll(Color(0xFF9F7BF6))),
+        cancelButtonStyle: ButtonStyle(
+            foregroundColor: WidgetStatePropertyAll(Color(0xFF9F7BF6)))),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Color.fromRGBO(115, 90, 172, 1),
       selectedItemColor: Color(0xFF9F7BF6),

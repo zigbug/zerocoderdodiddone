@@ -14,8 +14,9 @@ class DoDidDoneApp extends StatefulWidget {
 }
 
 class _DoDidDoneAppState extends State<DoDidDoneApp> {
-  final AuthenticationService _authService = AuthenticationService(); // Initialize your AuthService
-late User? user;
+  final AuthenticationService _authService =
+      AuthenticationService(); // Initialize your AuthService
+  late User? user;
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ late User? user;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'DoDidDone',
       theme: DoDidDoneTheme.lightTheme,
       home: _authService.currentUser != null

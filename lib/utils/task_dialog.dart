@@ -13,7 +13,6 @@ void showAddTaskDialog(BuildContext context, Task? task) {
   DateTime? _selectedDate; // Переменная для выбранной даты
   bool _isImportant = false; // Переменная для чекбокса "Важно"
   var notificationService = NotificationService();
-  notificationService.init();
 
   // Заполняем поля формы, если редактируем задачу
   if (task != null) {
@@ -49,7 +48,10 @@ void showAddTaskDialog(BuildContext context, Task? task) {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+                width: double.infinity,
+              ),
 
               // Поле "Суть задачи"
               SizedBox(
@@ -76,7 +78,7 @@ void showAddTaskDialog(BuildContext context, Task? task) {
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.calendar_today),
                     onPressed: () async {
-                      _selectedDate = await _selectDate(
+                      _selectedDate = await _selectDateTime(
                           context, _selectedDate ?? DateTime.now());
                       _dueDateController.text = _selectedDate.toString();
                     },
@@ -111,6 +113,9 @@ void showAddTaskDialog(BuildContext context, Task? task) {
               Navigator.of(context).pop();
             },
             child: const Text('Отмена'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.blue, // Синий цвет текста
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -147,6 +152,7 @@ void showAddTaskDialog(BuildContext context, Task? task) {
                   await docRef.set(newTask.toMap());
                 }
 
+                await notificationService.init();
                 if (task?.isImportant ?? false) {
                   await notificationService.showNotification(
                       id: 2, title: title, body: description);
@@ -170,6 +176,9 @@ void showAddTaskDialog(BuildContext context, Task? task) {
             },
             child:
                 task != null ? const Text('Сохранить') : const Text('Добавить'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red, // Красный цвет текста
+            ),
           ),
         ],
       );
@@ -211,13 +220,30 @@ class _CheckBoxState extends State<CheckBox> {
 }
 
 // Метод для выбора даты
-Future<DateTime> _selectDate(
-    BuildContext context, DateTime _selectedDate) async {
+
+Future<DateTime> _selectDateTime(
+    BuildContext context, DateTime _selectedDateTime) async {
   final DateTime? picked = await showDatePicker(
     context: context,
-    initialDate: _selectedDate ?? DateTime.now(),
+    initialDate: _selectedDateTime ?? DateTime.now(),
     firstDate: DateTime(2000),
     lastDate: DateTime(2101),
   );
-  return picked ?? _selectedDate;
+
+  if (picked != null) {
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(picked),
+    );
+    if (time != null) {
+      return DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        time.hour,
+        time.minute,
+      );
+    }
+  }
+  return _selectedDateTime ?? DateTime.now();
 }
