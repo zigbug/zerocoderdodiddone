@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../screens/all_tasks.dart';
+import '../screens/completed.dart';
+import '../screens/for_today.dart';
 import '../screens/profile.dart';
 import '../theme/theme.dart';
 
@@ -16,8 +19,8 @@ class _MainPageState extends State<MainPage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     TasksPage(),
-    Text('Сегодня'),
-    Text('Выполнено'),
+    ForTodayPage(),
+    ComplededPage(), // Используем ComplededPage для 3-го элемента
     ProfilePage(), // Используем ProfilePage для 4-го элемента
   ];
 
@@ -108,13 +111,16 @@ class _MainPageState extends State<MainPage> {
                         child: const Text('Отмена'),
                       ),
                       TextButton(
-                        onPressed: () {
-                          // Обработка добавления задачи
-                          // Например, можно добавить задачу в список _tasks
-                          // и обновить состояние
-                          setState(() {
-                            // ...
+                        onPressed: () async {
+                          // Добавление задачи в FirebaseFirestore
+                          final tasksCollection =
+                              FirebaseFirestore.instance.collection('tasks');
+                          await tasksCollection.add({
+                            'title': _title,
+                            'description': _description,
+                            'deadline': _deadline,
                           });
+
                           Navigator.pop(context);
                         },
                         child: const Text('Добавить'),

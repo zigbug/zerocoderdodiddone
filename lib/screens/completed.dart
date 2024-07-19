@@ -3,24 +3,21 @@ import 'package:flutter/material.dart';
 
 import '../widgets/task_item.dart';
 
-class TasksPage extends StatefulWidget {
-  const TasksPage({Key? key}) : super(key: key);
+class ComplededPage extends StatefulWidget {
+  const ComplededPage({Key? key}) : super(key: key);
 
   @override
-  State<TasksPage> createState() => _TasksPageState();
+  State<ComplededPage> createState() => _ComplededPageState();
 }
 
-class _TasksPageState extends State<TasksPage> {
+class _ComplededPageState extends State<ComplededPage> {
   final CollectionReference _tasksCollection =
       FirebaseFirestore.instance.collection('tasks');
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection
-          .where('completed', isEqualTo: false)
-          .where('is_for_today', isEqualTo: false)
-          .snapshots(),
+      stream: _tasksCollection.where('completed', isEqualTo: true).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Ошибка при загрузке задач'));
