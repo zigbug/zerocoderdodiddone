@@ -51,12 +51,12 @@ class _ComplededPageState extends State<ForTodayPage> {
               toLeft: () {
                 _tasksCollection
                     .doc(tasks[index].id)
-                    .update({'completed': true});
+                    .update({'completed': false, 'is_for_today': false});
               },
               toRight: () {
                 _tasksCollection
                     .doc(tasks[index].id)
-                    .update({'is_for_today': true});
+                    .update({'is_for_today': false, 'completed': true});
               },
 
               // Добавьте обработчики для изменения и удаления задач

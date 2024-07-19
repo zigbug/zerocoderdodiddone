@@ -40,16 +40,16 @@ class TaskItem extends StatelessWidget {
     return Dismissible(
       key: Key(title), // Уникальный ключ для Dismissible
       background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
+        color: Colors.green,
+        alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(right: 20.0),
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: const Icon(Icons.arrow_forward, color: Colors.white),
       ),
       secondaryBackground: Container(
         color: Colors.blue,
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(left: 20.0),
-        child: const Icon(Icons.edit, color: Colors.white),
+        child: const Icon(Icons.arrow_back, color: Colors.white),
       ),
       onDismissed: (direction) {
         if (direction == DismissDirection.endToStart) {
