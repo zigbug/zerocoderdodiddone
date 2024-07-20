@@ -23,6 +23,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     user = _authService.currentUser;
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: DoDidDoneTheme.lightTheme,
       home: user == null ? const LoginPage() : const MainPage(),

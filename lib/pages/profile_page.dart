@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:zerocoderdodiddone/screens/profile.dart';
-import 'package:zerocoderdodiddone/services/firebase_auth.dart'; // Импортируем AuthenticationService
+import 'package:zerocoderdodiddone/screens/profile.dart'; // Импортируем AuthenticationService
 
 import '../theme/theme.dart';
-import 'main_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -38,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   stops: const [0.1, 0.9], // Основной цвет занимает 90%
                 ),
               ),
-              child: ProfileScreen()),
+              child: const ProfileScreen()),
         ));
   }
 }

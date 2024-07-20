@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zerocoderdodiddone/pages/profile_page.dart';
 import 'package:zerocoderdodiddone/services/firebase_auth.dart'; // Импортируем AuthenticationService
 
 import '../theme/theme.dart';
@@ -230,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const MainPage()));
+                                    builder: (context) => const ProfilePage()));
                           }
                         } catch (e) {
                           // Обработка ошибок при регистрации

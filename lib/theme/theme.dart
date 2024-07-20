@@ -25,7 +25,7 @@ class DoDidDoneTheme {
       selectedItemColor: const Color(0xFF9f7bf6), // Цвет выбранной иконки
       unselectedItemColor:
           const Color(0xFF4ceb8b).withOpacity(0.5), // Цвет невыбранной иконки
-      backgroundColor: Colors.transparent, // Прозрачный фон
+      // backgroundColor: Colors.transparent, // Прозрачный фон
       // Убираем тень
     ),
   );
