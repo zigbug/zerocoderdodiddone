@@ -7,19 +7,24 @@ class NotificationService {
   static Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings(
-            'app_icon'); // Замените 'app_icon' на имя вашего иконки
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
-    );
+            '@mipmap/ic_launcher'); // Замените 'app_icon' на имя вашего иконки
+    // const DarwinInitializationSettings initializationSettingsIOS =
+    //     DarwinInitializationSettings(
+    //   requestSoundPermission: false,
+    //   requestBadgePermission: false,
+    //   requestAlertPermission: false,
+    // );
     const InitializationSettings initializationSettings =
         InitializationSettings(
       android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
+      // iOS: initializationSettingsIOS,
     );
     await _notificationsPlugin.initialize(initializationSettings);
+
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
   }
 
   static Future<void> showNotification(
@@ -29,9 +34,9 @@ class NotificationService {
       int? seconds}) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      channelDescription: 'your channel description',
+      'channel_id',
+      'channel_name',
+      channelDescription: 'канал для уведомлений',
       importance: Importance.max,
       priority: Priority.high,
       playSound: true,

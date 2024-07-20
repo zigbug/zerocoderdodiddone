@@ -3,8 +3,10 @@ import '../screens/all_tasks.dart';
 import '../screens/completed.dart';
 import '../screens/for_today.dart';
 import '../screens/profile.dart';
+import '../services/notification_sevrvice.dart';
 import '../theme/theme.dart';
 import '../widgets/dialog_widget.dart';
+import 'profile_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -14,13 +16,18 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
     TasksPage(),
     ForTodayPage(),
     ComplededPage(), // Используем ComplededPage для 3-го элемента
-    ProfilePage(), // Используем ProfilePage для 4-го элемента
+    // ProfilePage(), // Используем ProfilePage для 4-го элемента
   ];
 
   void _onItemTapped(int index) {
@@ -54,6 +61,18 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Прозрачный AppBar
         elevation: 0, // Убираем тень
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()));
+            },
+            icon: const Icon(
+              Icons.person_2,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: Container(
         // Добавляем Container для градиента
@@ -86,10 +105,10 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.check_circle),
             label: 'Выполнено',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Профиль',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.person),
+          //   label: 'Профиль',
+          // ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

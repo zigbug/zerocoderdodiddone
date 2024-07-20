@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../services/notification_sevrvice.dart';
+
 class DialogWidget extends StatefulWidget {
   const DialogWidget(
       {super.key, this.title, this.description, this.deadline, this.taskId});
@@ -150,7 +152,10 @@ class _DialogWidgetState extends State<DialogWidget> {
                           'remind': _remind, // Добавлено поле 'remind'
                         });
                       }
-
+                      await NotificationService.showNotification(
+                          id: 11,
+                          title: _title ?? 'задача',
+                          body: _description ?? 'описания нет');
                       Navigator.pop(context);
                     },
                     child:
