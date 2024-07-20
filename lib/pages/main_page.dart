@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../screens/all_tasks.dart';
 import '../screens/completed.dart';
 import '../screens/for_today.dart';
@@ -9,7 +7,7 @@ import '../theme/theme.dart';
 import '../widgets/dialog_widget.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
