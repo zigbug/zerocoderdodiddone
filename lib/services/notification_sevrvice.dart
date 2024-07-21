@@ -1,4 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:async';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz;
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -6,8 +9,8 @@ class NotificationService {
 
   static Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings(
-            '@mipmap/ic_launcher'); // Замените 'app_icon' на имя вашего иконки
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    tz.initializeTimeZones();
     // const DarwinInitializationSettings initializationSettingsIOS =
     //     DarwinInitializationSettings(
     //   requestSoundPermission: false,
@@ -31,7 +34,8 @@ class NotificationService {
       {required int id,
       required String title,
       required String body,
-      int? seconds}) async {
+      int? seconds,
+      DateTime? scheduledDate}) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'channel_id',
@@ -51,14 +55,32 @@ class NotificationService {
       android: androidPlatformChannelSpecifics,
       // iOS: iOSPlatformChannelSpecifics,
     );
-    await _notificationsPlugin.show(
-      id,
-      title,
-      body,
-      platformChannelSpecifics,
-      payload: 'item x',
-      // timeoutAfter: seconds != null ? Duration(seconds: seconds) : null,
-    );
+
+    if (scheduledDate != null) {
+      // Отложенное уведомление
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        // Запланируйте уведомление на определенное время
+        tz.TZDateTime.from(scheduledDate, tz.local),
+        platformChannelSpecifics,
+        // androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.dateAndTime,
+      );
+    } else {
+      // Немедленное уведомление
+      await _notificationsPlugin.show(
+        id,
+        title,
+        body,
+        platformChannelSpecifics,
+        payload: 'item x',
+        // timeoutAfter: seconds != null ? Duration(seconds: seconds) : null,
+      );
+    }
   }
 
   static Future<void> cancelNotification(int id) async {

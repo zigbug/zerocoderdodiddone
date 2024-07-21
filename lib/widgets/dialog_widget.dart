@@ -152,10 +152,14 @@ class _DialogWidgetState extends State<DialogWidget> {
                           'remind': _remind, // Добавлено поле 'remind'
                         });
                       }
-                      await NotificationService.showNotification(
-                          id: 11,
-                          title: _title ?? 'задача',
-                          body: _description ?? 'описания нет');
+                      if (_remind) {
+                        await NotificationService.showNotification(
+                            id: 11,
+                            title: _title ?? 'задача',
+                            body: _description ?? 'описания нет',
+                            scheduledDate: _deadline!
+                                .subtract(const Duration(seconds: 20)));
+                      }
                       Navigator.pop(context);
                     },
                     child:
