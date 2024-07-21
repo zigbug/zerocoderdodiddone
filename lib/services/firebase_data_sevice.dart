@@ -3,27 +3,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_auth.dart';
 
 class TaskService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final CollectionReference _tasksCollection = FirebaseFirestore.instance
+  final CollectionReference tasksCollection = FirebaseFirestore.instance
       .collection('tasks${AuthenticationService().currentUser?.uid}');
 
   // Получение всех задач
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getTasks() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot =
-        await _tasksCollection.get() as QuerySnapshot<Map<String, dynamic>>;
+        await tasksCollection.get() as QuerySnapshot<Map<String, dynamic>>;
     return snapshot.docs;
   }
 
   // Получение потока всех задач
   Stream<QuerySnapshot<Map<String, dynamic>>> getTasksStream() {
-    return _tasksCollection.snapshots()
+    return tasksCollection.snapshots()
         as Stream<QuerySnapshot<Map<String, dynamic>>>;
   }
 
   // Получение задачи по ID
   Future<DocumentSnapshot<Map<String, dynamic>>> getTaskById(
       String taskId) async {
-    return await _tasksCollection.doc(taskId).get()
+    return await tasksCollection.doc(taskId).get()
         as DocumentSnapshot<Map<String, dynamic>>;
   }
 
@@ -33,7 +32,7 @@ class TaskService {
       required String description,
       required DateTime deadline,
       required bool remind}) async {
-    await _tasksCollection.add({
+    await tasksCollection.add({
       'title': title,
       'description': description,
       'deadline': deadline,
@@ -50,7 +49,7 @@ class TaskService {
       required String? description,
       required DateTime? deadline,
       required bool? remind}) async {
-    await _tasksCollection.doc(taskId).update({
+    await tasksCollection.doc(taskId).update({
       'title': title ?? '',
       'description': description ?? '',
       'deadline': deadline ?? DateTime.now(),
@@ -60,26 +59,28 @@ class TaskService {
 
   // Удаление задачи
   Future<void> deleteTask(String taskId) async {
-    await _tasksCollection.doc(taskId).delete();
+    await tasksCollection.doc(taskId).delete();
   }
 
   // Изменение статуса завершения задачи
   Future<void> toggleTaskCompletion(String taskId) async {
-    DocumentSnapshot<Map<String, dynamic>> task = await _tasksCollection
-        .doc(taskId)
-        .get() as DocumentSnapshot<Map<String, dynamic>>;
-    await _tasksCollection.doc(taskId).update({
-      'completed': !task.data()!['completed'],
+    await tasksCollection.doc(taskId).update({
+      'completed': true,
       'is_for_today': false,
     });
   }
 
   Future<void> toggleTaskForToday(String taskId) async {
-    DocumentSnapshot<Map<String, dynamic>> task = await _tasksCollection
-        .doc(taskId)
-        .get() as DocumentSnapshot<Map<String, dynamic>>;
-    await _tasksCollection.doc(taskId).update({
-      'completed': !task.data()!['completed'],
+    await tasksCollection.doc(taskId).update({
+      'completed': false,
+      'is_for_today': true,
+    });
+  }
+
+  Future<void> toggleTaskForAll(String taskId) async {
+    await tasksCollection.doc(taskId).update({
+      'completed': false,
+      'is_for_today': false,
     });
   }
 }

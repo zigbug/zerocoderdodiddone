@@ -17,6 +17,14 @@ class _MyAppState extends State<MyApp> {
   final AuthenticationService _authService =
       AuthenticationService(); // Initialize your AuthService
   late User? user;
+  ThemeMode _themeMode = ThemeMode.light;
+
+  void _toggleTheme() {
+    setState(() {
+      _themeMode =
+          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
 
   // This widget is the root of your application.
   @override
@@ -26,7 +34,11 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: DoDidDoneTheme.lightTheme,
-      home: user == null ? const LoginPage() : const MainPage(),
+      darkTheme: DoDidDoneTheme.darkTheme,
+      themeMode: _themeMode,
+      home: user == null
+          ? LoginPage(toggleTheme: _toggleTheme)
+          : MainPage(toggleTheme: _toggleTheme),
     );
   }
 }

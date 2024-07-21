@@ -1,23 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../services/firebase_data_sevice.dart';
 import '../widgets/task_item.dart';
 
 class ComplededPage extends StatefulWidget {
-  const ComplededPage({Key? key}) : super(key: key);
+  const ComplededPage({super.key, required this.taskService});
+  final TaskService taskService;
 
   @override
   State<ComplededPage> createState() => _ComplededPageState();
 }
 
 class _ComplededPageState extends State<ComplededPage> {
-  final CollectionReference _tasksCollection =
-      FirebaseFirestore.instance.collection('tasks');
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection.where('completed', isEqualTo: true).snapshots(),
+      stream: widget.taskService.tasksCollection
+          .where('completed', isEqualTo: true)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Ошибка при загрузке задач'));
@@ -31,8 +32,7 @@ class _ComplededPageState extends State<ComplededPage> {
 
         if (tasks.isEmpty) {
           return const Center(
-              child: Text(
-                  'Нет задач, время отдыхать.. \n или создать новую задачу?'));
+              child: Text('Нет завершённых задач, время действовать!'));
         }
 
         return ListView.builder(
@@ -44,30 +44,20 @@ class _ComplededPageState extends State<ComplededPage> {
             final taskDeadline = (taskData['deadline'] as Timestamp).toDate();
 
             return TaskItem(
+              taskService: widget.taskService,
               title: taskTitle,
               description: taskDescription,
-              deadline: taskDeadline ?? DateTime.now(),
-              toLeft: () {
-                _tasksCollection
-                    .doc(tasks[index].id)
-                    .update({'is_for_today': true, 'completed': false});
+              deadline: taskDeadline,
+              toLeft: () async {
+                await widget.taskService.toggleTaskForToday(tasks[index].id);
               },
-              toRight: () {
-                _tasksCollection
-                    .doc(tasks[index].id)
-                    .update({'is_for_today': false, 'completed': false});
+              toRight: () async {
+                await widget.taskService.toggleTaskForAll(tasks[index].id);
               },
 
               // Добавьте обработчики для изменения и удаления задач
-              onEdit: () {
-                // Обработка изменения задачи
-                // Например, можно открыть диалог для редактирования
-              },
-              onDelete: () {
-                // Обработка удаления задачи
-                // Например, можно показать диалог подтверждения
-                _tasksCollection.doc(tasks[index].id).delete();
-              },
+
+              taskId: tasks[index].id, screenIndex: 2,
             );
           },
         );

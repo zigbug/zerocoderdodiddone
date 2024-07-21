@@ -6,7 +6,8 @@ import '../theme/theme.dart';
 import 'main_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key, required this.toggleTheme});
+  final Function toggleTheme;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -61,24 +62,26 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/0qode_symbol_1.png', // Замените на правильный путь к файлу
-                      height: 60, // Устанавливаем высоту изображения
-                    ),
-                    const SizedBox(width: 8),
-                    // Добавляем текст "zerocoder"
-                    Text(
-                      'zerocoder',
-                      style: TextStyle(
-                        fontSize: 62,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white, // Белый цвет текста
+                Flexible(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/0qode_symbol_1.png', // Замените на правильный путь к файлу
+                        height: 60, // Устанавливаем высоту изображения
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      // Добавляем текст "zerocoder"
+                      const Text(
+                        'zerocoder',
+                        style: TextStyle(
+                          fontSize: 64,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white, // Белый цвет текста
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 30),
                 // Добавляем текст "Do"
@@ -205,16 +208,22 @@ class _LoginPageState extends State<LoginPage> {
                           final userCredential = await _authenticationService
                               .signInWithEmailAndPassword(_emailController.text,
                                   _passwordController.text);
-                          if (userCredential != null) {
+                          if (userCredential != null &&
+                              userCredential.user?.emailVerified == true) {
                             // Переход на MainPage
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const MainPage()));
+                                    builder: (context) => MainPage(
+                                        toggleTheme: widget.toggleTheme)));
+                          } else if (userCredential != null) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfilePage(
+                                        toggleTheme: widget.toggleTheme)));
                           }
                         } catch (e) {
-                          // Обработка ошибок при входе
-                          print('Ошибка входа: $e');
                           // Вывод сообщения об ошибке пользователю
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Ошибка входа: $e')));
@@ -227,15 +236,15 @@ class _LoginPageState extends State<LoginPage> {
                                   _emailController.text,
                                   _passwordController.text);
                           if (userCredential != null) {
-                            // Переход на MainPage
+                            // Переход на ProfilePage
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const ProfilePage()));
+                                    builder: (context) => ProfilePage(
+                                          toggleTheme: widget.toggleTheme,
+                                        )));
                           }
                         } catch (e) {
-                          // Обработка ошибок при регистрации
-                          print('Ошибка регистрации: $e');
                           // Вывод сообщения об ошибке пользователю
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Ошибка регистрации: $e')));

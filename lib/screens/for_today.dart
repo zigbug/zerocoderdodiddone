@@ -1,24 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zerocoderdodiddone/services/firebase_data_sevice.dart';
 
 import '../widgets/task_item.dart';
 
 class ForTodayPage extends StatefulWidget {
-  const ForTodayPage({Key? key}) : super(key: key);
+  const ForTodayPage({super.key, required this.taskService});
+  final TaskService taskService;
 
   @override
   State<ForTodayPage> createState() => _ComplededPageState();
 }
 
 class _ComplededPageState extends State<ForTodayPage> {
-  final CollectionReference _tasksCollection =
-      FirebaseFirestore.instance.collection('tasks');
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream:
-          _tasksCollection.where('is_for_today', isEqualTo: true).snapshots(),
+      stream: widget.taskService.tasksCollection
+          .where('is_for_today', isEqualTo: true)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Ошибка при загрузке задач'));
@@ -45,30 +45,18 @@ class _ComplededPageState extends State<ForTodayPage> {
             final taskDeadline = (taskData['deadline'] as Timestamp).toDate();
 
             return TaskItem(
+              taskService: widget.taskService,
               title: taskTitle,
               description: taskDescription,
-              deadline: taskDeadline ?? DateTime.now(),
-              toLeft: () {
-                _tasksCollection
-                    .doc(tasks[index].id)
-                    .update({'completed': false, 'is_for_today': false});
+              deadline: taskDeadline,
+              toLeft: () async {
+                await widget.taskService.toggleTaskForAll(tasks[index].id);
               },
-              toRight: () {
-                _tasksCollection
-                    .doc(tasks[index].id)
-                    .update({'is_for_today': false, 'completed': true});
+              toRight: () async {
+                await widget.taskService.toggleTaskCompletion(tasks[index].id);
               },
-
-              // Добавьте обработчики для изменения и удаления задач
-              onEdit: () {
-                // Обработка изменения задачи
-                // Например, можно открыть диалог для редактирования
-              },
-              onDelete: () {
-                // Обработка удаления задачи
-                // Например, можно показать диалог подтверждения
-                _tasksCollection.doc(tasks[index].id).delete();
-              },
+              taskId: tasks[index].id,
+              screenIndex: 1,
             );
           },
         );

@@ -1,16 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:zerocoderdodiddone/services/firebase_data_sevice.dart';
 
 import '../services/notification_sevrvice.dart';
 
 class DialogWidget extends StatefulWidget {
   const DialogWidget(
-      {super.key, this.title, this.description, this.deadline, this.taskId});
+      {super.key,
+      this.title,
+      this.description,
+      this.deadline,
+      this.taskId,
+      required this.taskService});
   final String? title;
   final String? description;
   final DateTime? deadline;
   final String? taskId; // ID задачи для редактирования
+  final TaskService taskService;
 
   @override
   State<DialogWidget> createState() => _DialogWidgetState();
@@ -130,28 +137,24 @@ class _DialogWidgetState extends State<DialogWidget> {
                   ),
                   TextButton(
                     onPressed: () async {
-                      final tasksCollection =
-                          FirebaseFirestore.instance.collection('tasks');
-
+                      // Редактирование существующей задачи
                       if (widget.taskId != null) {
-                        // Редактирование существующей задачи
-                        await tasksCollection.doc(widget.taskId).update({
-                          'title': _title,
-                          'description': _description,
-                          'deadline': _deadline,
-                          'remind': _remind, // Добавлено поле 'remind'
-                        });
+                        await widget.taskService.updateTask(
+                            taskId: widget.taskId!,
+                            title: _title,
+                            description: _description,
+                            deadline: _deadline,
+                            remind: _remind);
                       } else {
                         // Добавление новой задачи
-                        await tasksCollection.add({
-                          'title': _title,
-                          'description': _description,
-                          'deadline': _deadline,
-                          'completed': false,
-                          'is_for_today': false,
-                          'remind': _remind, // Добавлено поле 'remind'
-                        });
+
+                        await widget.taskService.addTask(
+                            title: _title ?? 'задача',
+                            description: _description ?? 'описания нет',
+                            deadline: _deadline ?? DateTime.now(),
+                            remind: _remind);
                       }
+                      //добавление уведомления
                       if (_remind) {
                         await NotificationService.showNotification(
                             id: 11,

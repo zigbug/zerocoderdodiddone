@@ -9,7 +9,8 @@ import '../services/firebase_auth.dart';
 import '../utils/image_picer_util.dart'; // Импортируем ImagePickerUtil
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key, required this.toggleTheme});
+  final Function toggleTheme;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -108,6 +109,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: const TextStyle(fontSize: 18),
           ),
           const SizedBox(height: 10),
+          if (user != null && !user.emailVerified)
+            const Text(
+                'Ваш email пока не подтвержден, вы не можете работать с приложением'),
+          const SizedBox(height: 20),
 
           // Кнопка подтверждения почты (отображается, если почта не подтверждена)
           if (user != null && !user.emailVerified)
@@ -127,7 +132,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onPressed: () => Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const LoginPage())),
+                                builder: (context) => LoginPage(
+                                      toggleTheme: widget.toggleTheme,
+                                    ))),
                         child: const Text('OK'),
                       ),
                     ],
@@ -138,6 +145,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           const SizedBox(height: 20),
 
+          // Переключатель темы
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Тёмная тема:'),
+              Switch(
+                value: Theme.of(context).brightness == Brightness.dark,
+                onChanged: (value) {
+                  widget.toggleTheme(); // Вызываем функцию toggleTheme
+                },
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
           // Кнопка выхода из профиля
           ElevatedButton(
             onPressed: () async {
@@ -146,7 +169,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Переход на страницу входа
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
+                MaterialPageRoute(
+                    builder: (context) => LoginPage(
+                          toggleTheme: widget.toggleTheme,
+                        )),
               );
             },
             style: ElevatedButton.styleFrom(

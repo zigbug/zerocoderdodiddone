@@ -8,27 +8,23 @@ import '../widgets/dialog_widget.dart';
 import 'profile_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({super.key, required this.toggleTheme});
+  final Function toggleTheme;
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  TaskService taskService = TaskService();
+  late TaskService taskService;
 
   @override
   void initState() {
+    taskService = TaskService();
     super.initState();
   }
 
   int _selectedIndex = 0;
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    TasksPage(taskService),
-    ForTodayPage(taskService),
-    ComplededPage(taskService), // Используем ComplededPage для 3-го элемента
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -41,14 +37,15 @@ class _MainPageState extends State<MainPage> {
     showDialog(
       context: context,
       builder: (context) {
-        String _title = '';
-        String _description = '';
-        DateTime _deadline = DateTime.now();
+        String title = '';
+        String description = '';
+        DateTime deadline = DateTime.now();
 
         return DialogWidget(
-          title: _title,
-          description: _description,
-          deadline: _deadline,
+          taskService: taskService,
+          title: title,
+          description: description,
+          deadline: deadline,
         );
       },
     );
@@ -56,16 +53,34 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _widgetOptions = <Widget>[
+      TasksPage(
+        taskService: taskService,
+      ),
+      ForTodayPage(
+        taskService: taskService,
+      ),
+      ComplededPage(
+        taskService: taskService,
+      ), // Используем ComplededPage для 3-го элемента
+    ];
+    final List<Widget> _titleOptions = [
+      Text('Нераспределённые'),
+      const Text('На сегодня'),
+      Text('Завершены')
+    ];
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Прозрачный AppBar
-        elevation: 0, // Убираем тень
+        title: _titleOptions.elementAt(_selectedIndex),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ProfilePage(toggleTheme: widget.toggleTheme)));
             },
             icon: const Icon(
               Icons.person_2,
@@ -81,8 +96,13 @@ class _MainPageState extends State<MainPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
             colors: [
-              DoDidDoneTheme.lightTheme.colorScheme.secondary,
-              DoDidDoneTheme.lightTheme.colorScheme.primary,
+              // Используем Theme.of(context) для получения текущей темы
+              Theme.of(context).brightness == Brightness.light
+                  ? DoDidDoneTheme.lightTheme.colorScheme.secondary
+                  : DoDidDoneTheme.darkTheme.colorScheme.secondary,
+              Theme.of(context).brightness == Brightness.light
+                  ? DoDidDoneTheme.lightTheme.colorScheme.primary
+                  : DoDidDoneTheme.darkTheme.colorScheme.primary,
             ],
             stops: const [0.1, 0.9], // Основной цвет занимает 90%
           ),

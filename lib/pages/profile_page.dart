@@ -4,7 +4,9 @@ import 'package:zerocoderdodiddone/screens/profile.dart'; // Импортиру�
 import '../theme/theme.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key, required this.toggleTheme});
+
+  final Function toggleTheme;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -36,7 +38,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   stops: const [0.1, 0.9], // Основной цвет занимает 90%
                 ),
               ),
-              child: const ProfileScreen()),
+              child: ProfileScreen(
+                toggleTheme: widget.toggleTheme,
+              )),
         ));
   }
 }
