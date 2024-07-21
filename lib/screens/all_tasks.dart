@@ -1,27 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zerocoderdodiddone/services/firebase_data_sevice.dart';
 
 import '../widgets/dialog_widget.dart';
 import '../widgets/task_item.dart';
 
 class TasksPage extends StatefulWidget {
-  const TasksPage({Key? key}) : super(key: key);
-
+  const TasksPage({super.key, required this.taskService});
+  final TaskService taskService;
   @override
   State<TasksPage> createState() => _TasksPageState();
 }
 
 class _TasksPageState extends State<TasksPage> {
-  final CollectionReference _tasksCollection =
-      FirebaseFirestore.instance.collection('tasks');
+ late TaskService _taskservise;
+@override
+void initState() {
+  _taskservise=widget.taskService;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _tasksCollection
-          .where('completed', isEqualTo: false)
-          .where('is_for_today', isEqualTo: false)
-          .snapshots(),
+      stream: _taskservise
+          .getTasksStream(), //получаем поток данных из сервиса
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Ошибка при загрузке задач'));
@@ -51,14 +54,15 @@ class _TasksPageState extends State<TasksPage> {
               title: taskTitle,
               description: taskDescription,
               deadline: taskDeadline ?? DateTime.now(),
-              toLeft: () {
-                _tasksCollection
-                    .doc(tasks[index].id)
-                    .update({'completed': true});
+              toLeft: () {_taskservise.toggleTaskCompletion(tasks[index].id);
+
+              
               },
               toRight: () {
+                _taskservise.updateTask(taskId: tasks[index].id, title: title, description: description, deadline: deadline, remind: remind)
+
                 _tasksCollection
-                    .doc(tasks[index].id)
+                    .doc()
                     .update({'is_for_today': true});
               },
 

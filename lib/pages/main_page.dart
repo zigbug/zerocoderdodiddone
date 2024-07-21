@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/all_tasks.dart';
 import '../screens/completed.dart';
 import '../screens/for_today.dart';
-import '../screens/profile.dart';
-import '../services/notification_sevrvice.dart';
+import '../services/firebase_data_sevice.dart';
 import '../theme/theme.dart';
 import '../widgets/dialog_widget.dart';
 import 'profile_page.dart';
@@ -16,6 +15,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  TaskService taskService = TaskService();
+
   @override
   void initState() {
     super.initState();
@@ -24,10 +25,9 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    TasksPage(),
-    ForTodayPage(),
-    ComplededPage(), // Используем ComplededPage для 3-го элемента
-    // ProfilePage(), // Используем ProfilePage для 4-го элемента
+    TasksPage(taskService),
+    ForTodayPage(taskService),
+    ComplededPage(taskService), // Используем ComplededPage для 3-го элемента
   ];
 
   void _onItemTapped(int index) {
@@ -105,10 +105,6 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.check_circle),
             label: 'Выполнено',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.person),
-          //   label: 'Профиль',
-          // ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

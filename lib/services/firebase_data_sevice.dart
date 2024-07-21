@@ -70,6 +70,16 @@ class TaskService {
         .get() as DocumentSnapshot<Map<String, dynamic>>;
     await _tasksCollection.doc(taskId).update({
       'completed': !task.data()!['completed'],
+      'is_for_today': false,
+    });
+  }
+
+  Future<void> toggleTaskForToday(String taskId) async {
+    DocumentSnapshot<Map<String, dynamic>> task = await _tasksCollection
+        .doc(taskId)
+        .get() as DocumentSnapshot<Map<String, dynamic>>;
+    await _tasksCollection.doc(taskId).update({
+      'completed': !task.data()!['completed'],
     });
   }
 }
