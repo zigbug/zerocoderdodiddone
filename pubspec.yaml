@@ -4,7 +4,7 @@ description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -14,15 +14,18 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
+  flutter_local_notifications: ^17.2.1+2
   firebase_auth: ^5.1.2
   google_sign_in: ^6.2.1
   equatable: ^2.0.5
   json_annotation: ^4.9.0
   cloud_firestore: ^5.1.0
   intl: ^0.19.0
-  firebase_core: ^3.2.0
-  flutter_local_notifications: ^17.2.1+1
+  firebase_core: ^3.2.0  
   rxdart: ^0.28.0
+  image_picker: ^1.1.2
+  firebase_storage: ^12.1.1
+  timezone: ^0.9.4
 
 dev_dependencies:
   flutter_test:

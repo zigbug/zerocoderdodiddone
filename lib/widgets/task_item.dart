@@ -1,174 +1,163 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:zerocoderdodiddone/utils/task_dialog.dart';
-
-import '../models/task_model.dart';
-
-enum Screen { allTasks, forToday, completed }
+import 'package:zerocoderdodiddone/services/firebase_data_sevice.dart';
+import 'package:zerocoderdodiddone/widgets/dialog_widget.dart'; // Импортируем пакет intl
 
 class TaskItem extends StatelessWidget {
-  final Task task;
-  final Screen screen;
-  final void Function(bool?) onChanged;
-  final void Function() onDismissedLeft;
-  final void Function() onDismissedRight;
-  final void Function() onEdit; // Добавляем функцию onEdit
-  final void Function() onDelete; // Добавляем функцию onDelete
-  final List<Widget> icons = const [
-    Icon(Icons.calendar_today, color: Colors.white),
-    Icon(Icons.check_circle, color: Colors.white),
-    Icon(Icons.list, color: Colors.white),
-  ];
+  final int screenIndex;
+  final TaskService taskService;
+  final String taskId;
+  final String title;
+  final String description;
+  final DateTime deadline;
+  final Function? toLeft;
+  final Function? toRight; // Функция для удаления
 
   const TaskItem({
     super.key,
-    required this.screen,
-    required this.task,
-    required this.onChanged,
-    required this.onDismissedLeft,
-    required this.onDismissedRight,
-    required this.onEdit, // Передаем функцию onEdit
-    required this.onDelete, // Передаем функцию onDelete
+    required this.title,
+    required this.description,
+    required this.deadline,
+    this.toLeft,
+    this.toRight,
+    required this.taskId,
+    required this.taskService,
+    required this.screenIndex,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Форматируем дату и время
+    String formattedDeadline = DateFormat('dd.MM.yy HH:mm').format(deadline);
+    List<IconData> icons = [
+      Icons.list,
+      Icons.calendar_today,
+      Icons.check_circle
+    ];
+
+    // Определяем срочность задачи
+    Duration timeUntilDeadline = deadline.difference(DateTime.now());
+    Color gradientStart;
+    if (timeUntilDeadline.inDays < 1) {
+      gradientStart = Colors.red; // Срочная
+    } else if (timeUntilDeadline.inDays < 2) {
+      gradientStart = Colors.yellow; // Средняя срочность
+    } else {
+      gradientStart = Colors.green; // Не срочная
+    }
+
     return Dismissible(
-      key: Key(task.createdAt.toString()),
-      //смещение слева направо
+      key: Key(title), // Уникальный ключ для Dismissible
       background: Container(
-        color: Colors.blue,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: icons[screen.index],
+        color: Colors.green,
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(right: 20.0),
+        child: Icon(
+          icons[(screenIndex + 1) % 3], // Иконка для перехода "На сегодня"
+          color: Colors.white,
         ),
       ),
       secondaryBackground: Container(
-        color: Colors.green,
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: icons[(screen.index + 1) % icons.length],
+        color: Colors.blue,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(left: 20.0),
+        child: Icon(
+          icons[(screenIndex - 1 < 0) ? 2 : screenIndex - 1],
+          color: Colors.white,
         ),
       ),
       onDismissed: (direction) {
-        if (direction == DismissDirection.startToEnd) {
-          onDismissedLeft();
-        } else if (direction == DismissDirection.endToStart) {
-          onDismissedRight();
+        if (direction == DismissDirection.endToStart) {
+          // Вызываем функцию, если элемент был сдвинут влево
+          toLeft?.call();
+        } else if (direction == DismissDirection.startToEnd) {
+          // Вызываем функцию, если элемент был сдвинут вправо
+          toRight?.call();
         }
       },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Верхняя часть с градиентом и заголовком
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  gradient: getGradient(task.priority),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    gradientStart,
+                    Theme.of(context).brightness == Brightness.light
+                        ? Colors.white
+                        : Colors.black54,
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black, // Цвет текста черный
+                      ),
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        task.title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black, // Изменили цвет на черный
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  IconButton(
+                    onPressed: () {
+                      // Обработка изменения задачи
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return DialogWidget(
+                            taskId: taskId,
+                            title: title,
+                            description: description,
+                            deadline: deadline,
+                            taskService: taskService,
+                          );
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.edit),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      await TaskService().deleteTask(taskId);
+                    },
+                    icon: const Icon(Icons.delete),
+                  ),
+                ],
               ),
-              // Основная часть информации
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Крайний срок
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8.0),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                                'Крайний срок:  ${DateFormat('dd.MM.yy в HH:mm').format(task.dueDate)}'),
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Описание
-                          Text(task.description),
-                          const SizedBox(height: 8),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              showAddTaskDialog(context, task);
-                            }, // Вызываем функцию диалог при нажатии
-                            icon: const Icon(Icons.edit),
-                          ),
-                          IconButton(
-                            onPressed:
-                                onDelete, // Вызываем функцию onDelete при нажатии
-                            icon: const Icon(Icons.delete),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    description,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Дедлайн: $formattedDeadline', // Используем отформатированную дату
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
               ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
-  }
-
-  // Функция для получения градиента в зависимости от приоритета
-  LinearGradient getGradient(Priority priority) {
-    switch (priority) {
-      case Priority.high:
-        return const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.red, Colors.white],
-        );
-      case Priority.medium:
-        return const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.yellow, Colors.white],
-        );
-      case Priority.low:
-        return const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.green, Colors.white],
-        );
-    }
   }
 }
