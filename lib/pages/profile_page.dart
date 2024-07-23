@@ -31,8 +31,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomCenter,
                   colors: [
-                    DoDidDoneTheme.lightTheme.colorScheme.secondary,
-                    DoDidDoneTheme.lightTheme.colorScheme.primary,
+                    Theme.of(context).brightness == Brightness.light
+                        ? DoDidDoneTheme.lightTheme.colorScheme.secondary
+                        : DoDidDoneTheme.darkTheme.colorScheme.secondary,
+                    Theme.of(context).brightness == Brightness.light
+                        ? DoDidDoneTheme.lightTheme.colorScheme.primary
+                        : DoDidDoneTheme.darkTheme.colorScheme.primary,
                   ],
 
                   stops: const [0.1, 0.9], // Основной цвет занимает 90%
